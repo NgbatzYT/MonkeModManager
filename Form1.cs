@@ -19,14 +19,14 @@ namespace MonkeModManager
         // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         private string DefaultOculusInstallDirectory = @"C:\Program Files\Oculus\Software\Software\another-axiom-gorilla-tag";
         private string DefaultSteamInstallDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag";
-        public static string InstallDirectory = @"";
+        public static string InstallDirectory = @""; // If you see this you should give me 500 dollars!!!!!
         Dictionary<string, int> groups = new Dictionary<string, int>();
         Dictionary<string, int> groupss = new Dictionary<string, int>();
         private List<ReleaseInfo> releases;
         private List<ReleaseInfo> releasesA;
         private bool modsDisabled;
-        private int CurrentVersion = 12; // actual version is 2.6.1.0 // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
-        public readonly string VersionNumber = "2.6.1.0"; // Fun fact of the day: this is the version number
+        private int CurrentVersion = 13; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
+        public readonly string VersionNumber = "2.6.2.0"; // Fun fact of the update: abcdefghijklmnopqrstuvwxyz // Fun fact of the year: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
 
         public Form1() => InitializeComponent();
 
@@ -263,7 +263,7 @@ namespace MonkeModManager
         private void buttonOpenGameFolder_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(InstallDirectory))
-                Process.Start(InstallDirectory);
+                Process.Start(InstallDirectory); // hmm very useful
         }
 
         private void buttonOpenConfigFolder_Click(object sender, EventArgs e)
@@ -335,7 +335,7 @@ namespace MonkeModManager
 
             labelVersion.Text = $@"Monke Mod Manager v{VersionNumber}";
 
-            if (InstallDirectory != @"" && Directory.Exists(InstallDirectory))
+            if (InstallDirectory != @"" && File.Exists(Path.Combine(InstallDirectory, "Gorilla Tag.exe")))
             {
                 textBoxDirectory.Text = InstallDirectory;
             }
@@ -503,106 +503,122 @@ namespace MonkeModManager
 
         private void LoadRequiredPlugins()
         {
-            UpdateStatus("Getting latest version info...");
-            LoadReleases();
-            this.Invoke((MethodInvoker)(() =>
+            try
             {
-                //Invoke so we can call from current thread
-                //Update checkbox's text
-                Dictionary<string, int> includedGroups = new Dictionary<string, int>(); // is this even used
-
-                for (int i = 0; i < groups.Count(); i++)
+                UpdateStatus("Getting latest version info...");
+                LoadReleases();
+                this.Invoke((MethodInvoker)(() =>
                 {
-                    var key = groups.First(x => x.Value == i).Key;
-                    var value = listViewMods.Groups.Add(new ListViewGroup(key, HorizontalAlignment.Left));
-                    groups[key] = value;
-                }
+                    //Invoke so we can call from current thread
+                    //Update checkbox's text
+                    //Dictionary<string, int> includedGroups = new Dictionary<string, int>(); // is this even used // lol its not!
 
-                foreach (ReleaseInfo release in releases)
-                {
-                    ListViewItem item = new ListViewItem();
-                    item.Text = release.Name;
-                    if (!String.IsNullOrEmpty(release.Version)) item.Text = $"{release.Name} - {release.Version}";
-                    if (!String.IsNullOrEmpty(release.Tag)) { item.Text = string.Format("{0} - ({1})", release.Name, release.Tag); }
-                    ;
-                    item.SubItems.Add(release.Author);
-                    item.Tag = release;
-                    if (release.Install)
+                    for (int i = 0; i < groups.Count(); i++)
                     {
-                        listViewMods.Items.Add(item);
+                        var key = groups.First(x => x.Value == i).Key;
+                        var value = listViewMods.Groups.Add(new ListViewGroup(key, HorizontalAlignment.Left));
+                        groups[key] = value;
                     }
-                    CheckDefaultMod(release, item);
 
-                    if (release.Group == null || !groups.ContainsKey(release.Group))
+                    foreach (ReleaseInfo release in releases)
                     {
-                        item.Group = listViewMods.Groups[groups["Uncategorized"]];
+                        ListViewItem item = new ListViewItem();
+                        item.Text = release.Name;
+                        if (!String.IsNullOrEmpty(release.Version)) item.Text = $"{release.Name} - {release.Version}";
+                        if (!String.IsNullOrEmpty(release.Tag)) { item.Text = string.Format("{0} - ({1})", release.Name, release.Tag); }
+                        ;
+                        item.SubItems.Add(release.Author);
+                        item.Tag = release;
+                        if (release.Install)
+                        {
+                            listViewMods.Items.Add(item);
+                        }
+                        CheckDefaultMod(release, item);
+
+                        if (release.Group == null || !groups.ContainsKey(release.Group))
+                        {
+                            item.Group = listViewMods.Groups[groups["Uncategorized"]];
+                        }
+                        else if (groups.ContainsKey(release.Group))
+                        {
+                            int index = groups[release.Group];
+                            item.Group = listViewMods.Groups[index];
+                        }
                     }
-                    else if (groups.ContainsKey(release.Group))
-                    {
-                        int index = groups[release.Group];
-                        item.Group = listViewMods.Groups[index];
-                    }
-                }
 
-                tabControlMain.Enabled = true;
-                buttonInstall.Enabled = true;
+                    tabControlMain.Enabled = true;
+                    buttonInstall.Enabled = true;
 
-            }));
+                }));
 
-            UpdateStatus("Release info updated!");
+                UpdateStatus("Release info updated!");
 
-            LoadRequiredCosmetic();
+                LoadRequiredCosmetic();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error!");
+                return;
+            }
         }
 
         private void LoadRequiredCosmetic()
         {
-            UpdateStatus("Getting latest addon info...");
-            LoadReleasesCosmetic();
-            this.Invoke((MethodInvoker)(() =>
+            try
             {
-                var includedGroups = new Dictionary<string, int>();
-
-                for (int i = 0; i < groupss.Count(); i++)
+                UpdateStatus("Getting latest addon info...");
+                LoadReleasesCosmetic();
+                this.Invoke((MethodInvoker)(() =>
                 {
-                    var key = groupss.First(x => x.Value == i).Key;
-                    var value = listViewed.Groups.Add(new ListViewGroup(key, HorizontalAlignment.Left));
-                    groupss[key] = value;
-                }
+                    var includedGroups = new Dictionary<string, int>();
 
-                foreach (ReleaseInfo release in releasesA)
-                {
-                    ListViewItem item = new ListViewItem();
-                    item.Text = release.Name;
-                    if (!String.IsNullOrEmpty(release.Version)) item.Text = $"{release.Name} - {release.Version} - {release.Mod}";
-                    if (!String.IsNullOrEmpty(release.Tag)) { item.Text = string.Format("{0} - ({1})", release.Name, release.Tag); }
-                    ;
-                    item.SubItems.Add(release.Author);
-                    item.SubItems.Add(release.Mod);
-                    item.Tag = release;
-                    if (release.Install)
+                    for (int i = 0; i < groupss.Count(); i++)
                     {
-                        listViewed.Items.Add(item);
+                        var key = groupss.First(x => x.Value == i).Key;
+                        var value = listViewed.Groups.Add(new ListViewGroup(key, HorizontalAlignment.Left));
+                        groupss[key] = value;
                     }
 
-                    if (release.Group == null || !groupss.ContainsKey(release.Group))
+                    foreach (ReleaseInfo release in releasesA)
                     {
-                        item.Group = listViewed.Groups[groups["Uncategorized"]];
+                        ListViewItem item = new ListViewItem();
+                        item.Text = release.Name;
+                        if (!String.IsNullOrEmpty(release.Version)) item.Text = $"{release.Name} - {release.Version} - {release.Mod}";
+                        if (!String.IsNullOrEmpty(release.Tag)) { item.Text = string.Format("{0} - ({1})", release.Name, release.Tag); }
+                        ;
+                        item.SubItems.Add(release.Author);
+                        item.SubItems.Add(release.Mod);
+                        item.Tag = release;
+                        if (release.Install)
+                        {
+                            listViewed.Items.Add(item);
+                        }
+
+                        if (release.Group == null || !groupss.ContainsKey(release.Group))
+                        {
+                            item.Group = listViewed.Groups[groups["Uncategorized"]];
+                        }
+                        else if (groupss.ContainsKey(release.Group))
+                        {
+                            int index = groupss[release.Group];
+                            item.Group = listViewed.Groups[index];
+                        }
+                        release.Install = false;
                     }
-                    else if (groupss.ContainsKey(release.Group))
-                    {
-                        int index = groupss[release.Group];
-                        item.Group = listViewed.Groups[index];
-                    }
-                    release.Install = false;
-                }
 
-                tabControlMain.Enabled = true;
-                buttonInstall.Enabled = true;
+                    tabControlMain.Enabled = true;
+                    buttonInstall.Enabled = true;
 
-            }));
+                }));
 
-            UpdateStatus("Release info updated!");
+                UpdateStatus("Release info updated!");
 
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error!");
+                return;
+            }
         }
 
         private void CheckDefaultMod(ReleaseInfo release, ListViewItem item)
@@ -681,7 +697,7 @@ namespace MonkeModManager
                 {
                     MessageBox.Show($"You have an old version of mmm!", "Update Available", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Process.Start("https://github.com/NgbatzYT/MonkeModManager/releases/latest");
-                    Application.Exit();
+                    Environment.Exit(0);
                 }));
             }
         }
@@ -780,6 +796,8 @@ namespace MonkeModManager
         }
         public void InstallMMMFile(string path) // i optimised the code i think well i made it slightly less confusing to me at least
         {
+            var res = MessageBox.Show($@"MMM files can install ANYTHING on to your computer so please proceed with caution. If you downloaded the file ({Path.GetFileName(path)}) of a sketchy website I recommend not installing it. Are you sure you want to continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (res == DialogResult.No) { UpdateStatus("User cancelled MMM file install."); return; }
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
             {
                 MessageBox.Show("Please select a valid MMM file.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -848,6 +866,18 @@ namespace MonkeModManager
             }
 
             return result;
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            releases.Clear();
+            releasesA.Clear();
+            groups = new Dictionary<string, int>();
+            groupss = new Dictionary<string, int>();
+            new Thread(LoadRequiredPlugins).Start();
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://gorillatagmodding.ngbatzstudios.com/#/");
         }
     }
 }

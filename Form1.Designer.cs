@@ -41,6 +41,7 @@ namespace MonkeModManager
             this.viewInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonModInfo = new System.Windows.Forms.Button();
             this.Utilities = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -67,6 +68,7 @@ namespace MonkeModManager
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button6 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.contextMenuStripMain.SuspendLayout();
             this.Utilities.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -158,6 +160,8 @@ namespace MonkeModManager
             // 
             // Utilities
             // 
+            this.Utilities.Controls.Add(this.button2);
+            this.Utilities.Controls.Add(this.button1);
             this.Utilities.Controls.Add(this.button8);
             this.Utilities.Controls.Add(this.button5);
             this.Utilities.Controls.Add(this.labelVersion);
@@ -171,6 +175,16 @@ namespace MonkeModManager
             this.Utilities.TabIndex = 1;
             this.Utilities.Text = "Utilities";
             this.Utilities.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(14, 192);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(132, 23);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "Refresh mod list";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button8
             // 
@@ -216,7 +230,7 @@ namespace MonkeModManager
             // 
             // buttonDiscordLink
             // 
-            this.buttonDiscordLink.Location = new System.Drawing.Point(379, 153);
+            this.buttonDiscordLink.Location = new System.Drawing.Point(379, 181);
             this.buttonDiscordLink.Name = "buttonDiscordLink";
             this.buttonDiscordLink.Size = new System.Drawing.Size(134, 23);
             this.buttonDiscordLink.TabIndex = 8;
@@ -435,6 +449,16 @@ namespace MonkeModManager
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(379, 152);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(132, 23);
+            this.button2.TabIndex = 19;
+            this.button2.Text = "Check out the guides!";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -465,6 +489,8 @@ namespace MonkeModManager
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox checkBox1;
