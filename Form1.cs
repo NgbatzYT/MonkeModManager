@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using Microsoft.Win32;
 using MonkeModManager.Internals;
 using MonkeModManager.Internals.SimpleJSON;
 
@@ -21,13 +19,14 @@ namespace MonkeModManager
         private string DefaultSteamInstallDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag";
         public static string InstallDirectory = @""; // If you see this you should give me 500 dollars!!!!!
         Dictionary<string, int> groups = new Dictionary<string, int>();
-        Dictionary<string, int> groupss = new Dictionary<string, int>();
+        Dictionary<string, string> installed = new Dictionary<string, string>();
+        Dictionary<string, bool> installedr = new Dictionary<string, bool>();
         private List<ReleaseInfo> releases;
-        private List<ReleaseInfo> releasesA;
         private bool modsDisabled;
-        private int CurrentVersion = 13; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
-        public readonly string VersionNumber = "2.6.2.0"; // Fun fact of the update: abcdefghijklmnopqrstuvwxyz // Fun fact of the year: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
-
+        private int CurrentVersion = 14; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
+        public readonly string VersionNumber = "2.7.0.0"; // Fun fact of the update: abcdefghijklmnopqrstuvwxyz // Fun fact of the year: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
+        private string currentMod;
+        
         public Form1() => InitializeComponent();
 
         private void buttonFolderBrowser_Click(object sender, EventArgs e)
@@ -44,15 +43,15 @@ namespace MonkeModManager
                     {
                         InstallDirectory = Path.GetDirectoryName(path);
                         textBoxDirectory.Text = InstallDirectory;
-                        EditmmmConfig(InstallDirectory);
+                        EditConfig(InstallDirectory);
                     }
                     else
-                        MessageBox.Show("That's not Gorilla Tag! please try again!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(@"That's not Gorilla Tag, please try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        private void buttonInstall_Click(object sender, EventArgs e) => new Thread(Install).Start();
+        private void buttonInstall_Click(object sender, EventArgs e) => new Thread(Install).Start(); // im very tired help aeuhgn( Frna8eyhify7sveur
 
         private void Install()
         {
@@ -62,9 +61,10 @@ namespace MonkeModManager
                 UpdateStatus("Starting install sequence...");
                 foreach (ReleaseInfo release in releases)
                 {
+                    currentMod = release.Name;
                     if (release.Install)
                     {
-                        UpdateStatus(string.Format("Downloading...{0}", release.Name));
+                        UpdateStatus(string.Format("Downloading...{0}", release.Name)); // its a lie it never downloaded
                         byte[] file = DownloadFile(release.Link);
                         UpdateStatus(string.Format("Installing...{0}", release.Name));
                         string fileName = Path.GetFileName(release.Link);
@@ -97,41 +97,11 @@ namespace MonkeModManager
                 }
                 UpdateStatus("Install complete!");
                 ChangeInstallButtonState(true);
-                AddonInstall();
+                GetInstalledMods();
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void AddonInstall()
-        {
-            try
-            {
-                UpdateStatus("Installing Addons...");
-                ChangeInstallButtonState(false);
-                foreach (ReleaseInfo release in releasesA)
-                {
-                    if (release.Install)
-                    {
-                        string dir;
-                        UpdateStatus(string.Format("Downloading...{0}", release.Name));
-                        byte[] file = DownloadFile(release.Link);
-                        UpdateStatus(string.Format("Installing...{0}", release.Name));
-                        string fileName = Path.GetFileName(release.Link);
-                        dir = release.InstallLocation == null ? Path.Combine(InstallDirectory, @"BepInEx\plugins", fileName) : Path.Combine(InstallDirectory, release.InstallLocation);
-                        if (!Directory.Exists(dir))
-                            Directory.CreateDirectory(dir);
-                        File.WriteAllBytes(Path.Combine(dir, fileName), file);
-                    }
-                }
-                UpdateStatus("Install complete!");
-                ChangeInstallButtonState(true);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Hey, an error occurred. Please go to discord.gg/monkemod and tell 'Ngbatz' or 'Graze' to fix this mod: " + currentMod + @". Error:" + e.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -207,51 +177,7 @@ namespace MonkeModManager
             
             release.Install = e.Item.Checked;
         }
-        private void listViewed_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            ReleaseInfo release = (ReleaseInfo)e.Item.Tag;
 
-            if (release.Dependencies.Count > 0)
-            {
-                foreach (ListViewItem item in listViewed.Items)
-                {
-                    ReleaseInfo plugin = (ReleaseInfo)item.Tag;
-
-                    if (plugin.Name == release.Name) continue;
-
-                    if (release.Dependencies.Contains(plugin.Name))
-                    {
-                        if (e.Item.Checked)
-                        {
-                            item.Checked = true;
-                            item.ForeColor = Color.DimGray;
-                        }
-                        else
-                        {
-                            release.Install = false;
-                            if (releases.Count(x => plugin.Dependents.Contains(x.Name) && x.Install) <= 1)
-                            {
-                                item.Checked = false;
-                                item.ForeColor = Color.Black;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // don't allow user to uncheck if a dependent is checked
-            if (release.Dependents.Count > 0)
-            {
-                if (releases.Count(x => release.Dependents.Contains(x.Name) && x.Install) > 0)
-                {
-                    e.Item.Checked = true;
-                }
-            }
-
-            if (release.Name.Contains("BepInEx")) { e.Item.Checked = true; }
-            
-            release.Install = e.Item.Checked;
-        }
         private void listViewMods_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             buttonModInfo.Enabled = listViewMods.SelectedItems.Count > 0; // idk what this is for but i think its important
@@ -263,7 +189,7 @@ namespace MonkeModManager
         private void buttonOpenGameFolder_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(InstallDirectory))
-                Process.Start(InstallDirectory); // hmm very useful
+                Process.Start(InstallDirectory); // hmm very useful // agreed just like whats below us
         }
 
         private void buttonOpenConfigFolder_Click(object sender, EventArgs e)
@@ -305,7 +231,7 @@ namespace MonkeModManager
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Something went wrong! Error: {ex}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($@"Something went wrong! Error: {ex}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     UpdateStatus("Failed to remove mods.");
                     return;
                 }
@@ -328,10 +254,12 @@ namespace MonkeModManager
 
         void Form1_Load(object sender, EventArgs e)
         {
+            CheckForUpdates();
+            
+            
             InstallDirectory = Properties.Settings.Default.InstallDirectory;
 
             releases = [];
-            releasesA = [];
 
             labelVersion.Text = $@"Monke Mod Manager v{VersionNumber}";
 
@@ -343,21 +271,22 @@ namespace MonkeModManager
             {
                 InstallDirectory = DefaultSteamInstallDirectory;
                 textBoxDirectory.Text = InstallDirectory;
-                EditmmmConfig(InstallDirectory); 
+                EditConfig(InstallDirectory); 
             }
             else if (File.Exists(Path.Combine(DefaultOculusInstallDirectory, "Gorilla Tag.exe")))
             {
                 InstallDirectory = DefaultOculusInstallDirectory;
                 textBoxDirectory.Text = InstallDirectory;
-                EditmmmConfig(InstallDirectory);
+                EditConfig(InstallDirectory);
             }
             else
             {
                 ShowErrorFindingDirectoryMessage();
             }
 
-            ConfigFix(); // i forgot about this
+            ConfigFix(); // i forgot about this // lol same // haha i can't find that method funny right
             new Thread(LoadRequiredPlugins).Start();
+            new Thread(GetInstalledMods).Start();
         }
 
         private void UpdateStatus(string status)
@@ -396,18 +325,20 @@ namespace MonkeModManager
                     ex.Message.Contains("403")
                         ? "Failed to fetch info, GitHub has most likely rate limited you, please check back in 15 - 30 minutes"
                         : "Failed to fetch info, please check your internet connection. If this persists contact \"ngbatz\" on discord via GTMG (https://discord.gg/monkemod)", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                MessageBox.Show("You will still be able to use MMM but you won't be able to install mods.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"You will still be able to use MMM but you won't be able to install mods.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 UpdateStatus("Failed to fetch info");
                 return null;
             }
         }
 
-        #region LoadReleases
-
         private void LoadReleases()
         {
-            var decodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/groupinfo.json"));
-            var decodedMods = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/modinfo.json"));
+            const bool debugging = false;
+            JSONNode decodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/groupinfo.json"));
+            JSONNode decodedMods = null;
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            decodedMods = JSON.Parse(!debugging ? DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/modinfo.json") : DownloadSite("https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/modinfo.json"));
 
 
             var allMods = decodedMods.AsArray;
@@ -418,7 +349,6 @@ namespace MonkeModManager
                 JSONNode current = allMods[i];
                 ReleaseInfo release = new ReleaseInfo(current["name"], current["author"], current["version"], current["group"], current["download_url"], current["install_location"], current["git_path"],
                     current["mod"], current["dependencies"].AsArray);
-                //UpdateReleaseInfo(ref release);
                 releases.Add(release);
             }
 
@@ -443,46 +373,6 @@ namespace MonkeModManager
             }
         }
 
-        private void LoadReleasesCosmetic()
-        {
-            var adecodedMods = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/NgbatzYT/MonkeModInfo/master/addoninfo.json"));
-            var adecodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/NgbatzYT/MonkeModInfo/master/addonmodinfo.json"));
-
-
-            var aallMods = adecodedMods.AsArray;
-            var aallGroups = adecodedGroups.AsArray;
-
-            for (int i = 0; i < aallMods.Count; i++)
-            {
-                JSONNode current = aallMods[i];
-                ReleaseInfo release = new ReleaseInfo(current["name"], current["author"], current["version"], current["group"], current["download_url"], current["install_location"], current["git_path"],
-                    current["mod"], current["dependencies"].AsArray);
-                //UpdateReleaseInfo(ref release);
-                releasesA.Add(release);
-            }
-
-            IOrderedEnumerable<KeyValuePair<string, JSONNode>> keyValuePairs = aallGroups.Linq.OrderBy(x => x.Value["rank"]);
-            for (int i = 0; i < aallGroups.Count; i++)
-            {
-                JSONNode current = aallGroups[i];
-                if (releasesA.Any(x => x.Group == current["name"]))
-                {
-                    groupss.Add(current["name"], groupss.Count());
-                }
-            }
-            groupss.Add("Uncategorized", groupss.Count);
-
-            foreach (ReleaseInfo release in releasesA)
-            {
-                foreach (string dep in release.Dependencies)
-                {
-                    releasesA.Where(x => x.Name == dep).FirstOrDefault()?.Dependents.Add(release.Name);
-                }
-            }
-        }
-
-        #endregion
-
         public void ConfigFix()
         {
             if (!File.Exists(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"))) {
@@ -498,8 +388,6 @@ namespace MonkeModManager
             string e = c.Replace("HideManagerGameObject = false", "HideManagerGameObject = true");
             File.WriteAllText(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"), e);
         }
-
-        #region LoadRequired
 
         private void LoadRequiredPlugins()
         {
@@ -552,67 +440,6 @@ namespace MonkeModManager
                 }));
 
                 UpdateStatus("Release info updated!");
-
-                LoadRequiredCosmetic();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error!");
-                return;
-            }
-        }
-
-        private void LoadRequiredCosmetic()
-        {
-            try
-            {
-                UpdateStatus("Getting latest addon info...");
-                LoadReleasesCosmetic();
-                this.Invoke((MethodInvoker)(() =>
-                {
-                    var includedGroups = new Dictionary<string, int>();
-
-                    for (int i = 0; i < groupss.Count(); i++)
-                    {
-                        var key = groupss.First(x => x.Value == i).Key;
-                        var value = listViewed.Groups.Add(new ListViewGroup(key, HorizontalAlignment.Left));
-                        groupss[key] = value;
-                    }
-
-                    foreach (ReleaseInfo release in releasesA)
-                    {
-                        ListViewItem item = new ListViewItem();
-                        item.Text = release.Name;
-                        if (!String.IsNullOrEmpty(release.Version)) item.Text = $"{release.Name} - {release.Version} - {release.Mod}";
-                        if (!String.IsNullOrEmpty(release.Tag)) { item.Text = string.Format("{0} - ({1})", release.Name, release.Tag); }
-                        ;
-                        item.SubItems.Add(release.Author);
-                        item.SubItems.Add(release.Mod);
-                        item.Tag = release;
-                        if (release.Install)
-                        {
-                            listViewed.Items.Add(item);
-                        }
-
-                        if (release.Group == null || !groupss.ContainsKey(release.Group))
-                        {
-                            item.Group = listViewed.Groups[groups["Uncategorized"]];
-                        }
-                        else if (groupss.ContainsKey(release.Group))
-                        {
-                            int index = groupss[release.Group];
-                            item.Group = listViewed.Groups[index];
-                        }
-                        release.Install = false;
-                    }
-
-                    tabControlMain.Enabled = true;
-                    buttonInstall.Enabled = true;
-
-                }));
-
-                UpdateStatus("Release info updated!");
-
             }
             catch (Exception e)
             {
@@ -629,14 +456,9 @@ namespace MonkeModManager
                 item.ForeColor = System.Drawing.Color.DimGray;
             }
             else
-            {
                 release.Install = false;
-            }
+            
         }
-
-        #endregion
-
-        #region location
 
         private void NotFoundHandler()
         {
@@ -656,13 +478,13 @@ namespace MonkeModManager
                             InstallDirectory = Path.GetDirectoryName(path);
                             textBoxDirectory.Text = InstallDirectory;
                             found = true;
-                            EditmmmConfig(InstallDirectory);
+                            EditConfig(InstallDirectory);
                         }
                         else
-                            MessageBox.Show("That's not Gorilla Tag.exe! please try again!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(@"That's not Gorilla Tag, please try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else
-                        Process.GetCurrentProcess().Kill();
+                        Environment.Exit(0);
 
                 }
             }
@@ -670,214 +492,128 @@ namespace MonkeModManager
 
         private void ShowErrorFindingDirectoryMessage()
         {
-            MessageBox.Show("We couldn't seem to find your Gorilla Tag installation, please press \"OK\" and point us to it", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("""We couldn't find your Gorilla Tag installation, please press "OK" and point us to it""", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             NotFoundHandler();
             this.TopMost = true;
         }
 
-        #endregion
-
-        #region Random
-
-        private void EditmmmConfig(string e)
+        private void EditConfig(string e)
         {
             Properties.Settings.Default.InstallDirectory = e;
             Properties.Settings.Default.Save();
             InstallDirectory = Properties.Settings.Default.InstallDirectory;
         }
-
-        private void button3_Click(object sender, EventArgs e) => CheckForUpdates();
-        private void CheckForUpdates()
-        {
-            UpdateStatus("Checking for updates...");
-            short version = Convert.ToInt16(DownloadSite("https://raw.githubusercontent.com/NgbatzYT/MonkeModManager/master/update"));
-            if (version > CurrentVersion)
-            {
-                this.Invoke((MethodInvoker)(() =>
-                {
-                    MessageBox.Show($"You have an old version of mmm!", "Update Available", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    Process.Start("https://github.com/NgbatzYT/MonkeModManager/releases/latest");
-                    Environment.Exit(0);
-                }));
-            }
-        }
-
-        #endregion
         
-        private void button3_Click_1(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            var steam = GetSteamPath();
-            if (InstallDirectory.Contains("another-axiom-gorilla-tag"))
-            {
-                ToggleMods(true); return; 
-            }
-            if (steam == null && checkBox1.Checked) { MessageBox.Show(@"Looks like we couldn't get your steam path. Try again later" ,@"Error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-            
-            ToggleMods(true);
-
-            Process.Start(checkBox1.Checked ? "\"C:\\Program Files (x86)\\Steam\\steam.exe\" -applaunch 1533390 -windowed" : "steam://rungameid/1533390");
+            Process.Start("https://gorillatagmodding.ngbatzstudios.com/#/");
         }
-        private void ToggleMods(bool enableMods)
+        private void modsButton_Click(object sender, EventArgs e)
         {
-            try
+            if (modsDisabled)
             {
-                if (enableMods)
+                if (!File.Exists(Path.Combine(InstallDirectory, "mods.disable")))
+                    return;
+                File.Move(Path.Combine(InstallDirectory, "mods.disable"), Path.Combine(InstallDirectory, "winhttp.dll"));
+                modsButton.Text = "Disable Mods";
+                modsButton.BackColor = System.Drawing.Color.Transparent;
+                modsDisabled = false;
+                UpdateStatus("Enabled mods!");
+            }
+            else
+            {
+                if (!File.Exists(Path.Combine(InstallDirectory, "winhttp.dll")))
+                    return;
+                File.Move(Path.Combine(InstallDirectory, "winhttp.dll"), Path.Combine(InstallDirectory, "mods.disable"));
+                modsButton.Text = "Enable Mods";
+                modsButton.BackColor = System.Drawing.Color.IndianRed;
+                modsDisabled = true;
+                UpdateStatus("Disabled mods!");
+            }
+        }
+
+
+        private void GetInstalledMods()
+        {
+            listView1.Items.Clear();
+            installedr.Clear();
+            installed.Clear();
+            
+            var modsPath = Path.Combine(InstallDirectory, "BepInEx/plugins");
+            
+            var modDlls = Directory.GetFiles(modsPath, "*.dll", SearchOption.AllDirectories);
+
+            foreach (var d in modDlls)
+            {
+                ListViewItem item = new ListViewItem();
+
+
+                if (installed.ContainsKey(Path.GetFileNameWithoutExtension(d)))
                 {
-                    if (!File.Exists(Path.Combine(InstallDirectory, "winhttp.dll")))
-                        File.Move(Path.Combine(InstallDirectory, "mods.disabled"), Path.Combine(InstallDirectory, "winhttp.dll"));
+                    int a = 0;
+                    foreach (var i in installed)
+                    {
+                        if (i.Key.Contains(Path.GetFileNameWithoutExtension(d)))
+                        {
+                            a++;
+                        }
+                    }
+                    a++;
+                    item.Text = Path.GetFileNameWithoutExtension(d) + @" " + a;
                 }
                 else
                 {
-                    if (File.Exists(Path.Combine(InstallDirectory, "winhttp.dll")))
+                    item.Text = Path.GetFileNameWithoutExtension(d);
+                }
+                
+                installed.Add(item.Text, d);
+                
+                listView1.Items.Add(item);
+            }
+        }
+        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            foreach (var d in  installed)
+            {
+                if (installedr.ContainsKey(d.Key) && installedr[d.Key])
+                    if (File.Exists(d.Value))
                     {
-                        File.Move(Path.Combine(InstallDirectory, "winhttp.dll"), Path.Combine(InstallDirectory, "mods.disabled"));
+                        File.Delete(d.Value);
+                        UpdateStatus($"Uninstalled {d.Key}...");
                     }
+            }
+            GetInstalledMods();
+        }
+        private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            foreach (ListViewItem item in listView1.Items)
+            {
+                installedr.Remove(item.Text);
+                installedr.Add(item.Text, item.Checked);
+            }
+        }
+        
+        private void CheckForUpdates() // i somehow deleted this when cleaning up unrequired code AAAAAAAAAAAAAAAAAAa
+        {
+            try
+            {
+                UpdateStatus("Checking for updates...");
+                short version = Convert.ToInt16(DownloadSite("https://raw.githubusercontent.com/NgbatzYT/MonkeModManager/master/update"));
+                if (version > CurrentVersion)
+                {
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        MessageBox.Show(@"You have an old version of MMM.", @"Update Available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Process.Start("https://github.com/NgbatzYT/MonkeModManager/releases/latest");
+                        Environment.Exit(0);
+                    }));
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // HAHAHA I WILL NEVER CATCH!!!
             }
-        }
-
-
-        private static string GetSteamPath()
-        {
-            using RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
-            object value = key?.GetValue("SteamExe");
-            return value?.ToString();
-        }
-        private void button6_Click(object sender, EventArgs e)
-        {
-            var steam = GetSteamPath();
-            if (InstallDirectory.Contains("another-axiom-gorilla-tag"))
-            {
-                ToggleMods(false); 
-                return; 
-            }
-            if (steam == null && checkBox1.Checked) { MessageBox.Show(@"Looks like we couldn't get your steam path. Try again later" ,@"Error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-            
-            ToggleMods(false);
-
-            Process.Start(checkBox1.Checked ? "\"C:\\Program Files (x86)\\Steam\\steam.exe\" -applaunch 1533390 -windowed" : "steam://rungameid/1533390");
-
-        }
-        
-        private void button8_Click(object sender, EventArgs e) => FindMMMFile();
-        
-        
-        private void FindMMMFile()
-        {
-            try
-            {
-                using var fileDialog = new OpenFileDialog();
-                fileDialog.Multiselect = false;
-                fileDialog.Filter = @"MMM Files (.mmm)|*.mmm";
-                fileDialog.FilterIndex = 1;
-
-                if (fileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string path = fileDialog.FileName;
-                    if (Path.GetExtension(path).Equals(".mmm", StringComparison.OrdinalIgnoreCase))
-                    {
-                        UpdateStatus("Installing MMM File...");
-                        InstallMMMFile(Path.GetFullPath(path));
-                    }
-                    else
-                    {
-                        MessageBox.Show("That's not an MMM file! Try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        public void InstallMMMFile(string path) // i optimised the code i think well i made it slightly less confusing to me at least
-        {
-            var res = MessageBox.Show($@"MMM files can install ANYTHING on to your computer so please proceed with caution. If you downloaded the file ({Path.GetFileName(path)}) of a sketchy website I recommend not installing it. Are you sure you want to continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (res == DialogResult.No) { UpdateStatus("User cancelled MMM file install."); return; }
-            if (string.IsNullOrEmpty(path) || !File.Exists(path))
-            {
-                MessageBox.Show("Please select a valid MMM file.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            
-            var p = Path.Combine(Directory.GetCurrentDirectory(), @"temp");
-            byte[] data = File.ReadAllBytes(path);
-            Directory.CreateDirectory(p);
-            UnzipFile(data, p);
-
-            if (File.Exists(Path.Combine(p, "Info.json")))
-            {
-                var f = JsonToDictionary(Path.Combine(p, "Info.json")); // my honest reaction to you looking at my code stinky
-
-                if (InstallDirectory == null)
-                {
-                    MessageBox.Show("Run MMM normally and select your install location!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error); // i didnt ask on golly
-                    return;
-                }
-
-                foreach (KeyValuePair<string, string> l in f)
-                {
-                    switch (l.Key)
-                    {
-                        case "dll":
-                            Directory.CreateDirectory(Path.Combine(InstallDirectory, $"BepInEx/plugins/{l.Value}"));
-                            File.Copy(Path.Combine(p, "mod.dll"), Path.Combine(InstallDirectory, $"BepInEx/plugins/{l.Value}", $"{l.Value}.dll"));
-                            break;
-                        case "download":
-                            var file = DownloadFile(l.Value);
-                            var modFolderName = Path.GetFileNameWithoutExtension(l.Value);
-                            
-                            Directory.CreateDirectory(Path.Combine(InstallDirectory, $"BepInEx/plugins/{modFolderName}"));
-
-                            if (Path.GetExtension(Path.GetFileName(l.Value))!.Equals(".dll", StringComparison.OrdinalIgnoreCase))
-                                File.WriteAllBytes(Path.Combine(InstallDirectory, $"BepInEx/plugins/{modFolderName}", Path.GetFileName(l.Value)!), file);
-                            else
-                                UnzipFile(file, Path.Combine(InstallDirectory, $@"BepInEx/plugins/{modFolderName}"));
-                            break;
-                        case "zip":
-                            var john = File.ReadAllBytes(Path.Combine(p, "mod.zip"));
-                            Directory.CreateDirectory(Path.Combine(InstallDirectory, $"BepInEx/plugins/{l.Value}"));
-                            UnzipFile(john, Path.Combine(InstallDirectory, $"BepInEx/plugins/{l.Value}"));
-                            break;
-                    }
-                }
-                Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), @"temp"), true);
-                UpdateStatus("Installed MMM File");
-            }
-        }
-        
-        private static Dictionary<string, string> JsonToDictionary(string path)
-        {
-            var result = new Dictionary<string, string>();
-    
-            string jsonString = File.ReadAllText(path);
-            JSONNode root = JSON.Parse(jsonString);
-
-            if (root == null || !root.IsObject)
-                return result;
-            JSONObject obj = root.AsObject;
-            foreach (JSONNode key in obj.Keys)
-            {
-                result[key] = obj[(string)key].Value;
-            }
-
-            return result;
-        }
-        private void button1_Click(object sender, EventArgs e)
-        {
-            releases.Clear();
-            releasesA.Clear();
-            groups = new Dictionary<string, int>();
-            groupss = new Dictionary<string, int>();
-            new Thread(LoadRequiredPlugins).Start();
-        }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            Process.Start("https://gorillatagmodding.ngbatzstudios.com/#/");
         }
     }
 }

@@ -40,10 +40,11 @@ namespace MonkeModManager
             this.contextMenuStripMain = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.viewInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonModInfo = new System.Windows.Forms.Button();
+            this.modsButton = new System.Windows.Forms.Button();
+            this.columnHeaderName = new System.Windows.Forms.ColumnHeader();
+            this.columnHeaderAuthor = new System.Windows.Forms.ColumnHeader();
             this.Utilities = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonDiscordLink = new System.Windows.Forms.Button();
@@ -53,30 +54,23 @@ namespace MonkeModManager
             this.buttonOpenGameFolder = new System.Windows.Forms.Button();
             this.labelOpen = new System.Windows.Forms.Label();
             this.buttonUninstallAll = new System.Windows.Forms.Button();
-            this.PluginAddons = new System.Windows.Forms.TabPage();
-            this.listViewed = new System.Windows.Forms.ListView();
+            this.Updates = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-            this.Plugins = new System.Windows.Forms.TabPage();
+            this.Installed = new System.Windows.Forms.TabPage();
             this.listViewMods = new System.Windows.Forms.ListView();
-            this.columnHeaderName = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderAuthor = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.tabControlMain = new System.Windows.Forms.TabControl();
-            this.GameOptions = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.contextMenuStripMain.SuspendLayout();
             this.Utilities.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.PluginAddons.SuspendLayout();
-            this.Plugins.SuspendLayout();
+            this.Updates.SuspendLayout();
+            this.Installed.SuspendLayout();
             this.tabControlMain.SuspendLayout();
-            this.GameOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBoxDirectory
@@ -158,12 +152,31 @@ namespace MonkeModManager
             this.buttonModInfo.UseVisualStyleBackColor = true;
             this.buttonModInfo.Click += new System.EventHandler(this.buttonModInfo_Click);
             // 
+            // modsButton
+            // 
+            this.modsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.modsButton.Location = new System.Drawing.Point(204, 341);
+            this.modsButton.Name = "modsButton";
+            this.modsButton.Size = new System.Drawing.Size(112, 23);
+            this.modsButton.TabIndex = 10;
+            this.modsButton.Text = "Disable Mods";
+            this.modsButton.UseVisualStyleBackColor = true;
+            this.modsButton.Click += new System.EventHandler(this.modsButton_Click);
+            // 
+            // columnHeaderName
+            // 
+            this.columnHeaderName.DisplayIndex = 0;
+            this.columnHeaderName.Text = "Name";
+            this.columnHeaderName.Width = 321;
+            // 
+            // columnHeaderAuthor
+            // 
+            this.columnHeaderAuthor.DisplayIndex = 1;
+            this.columnHeaderAuthor.Text = "Author";
+            // 
             // Utilities
             // 
             this.Utilities.Controls.Add(this.button2);
-            this.Utilities.Controls.Add(this.button1);
-            this.Utilities.Controls.Add(this.button8);
-            this.Utilities.Controls.Add(this.button5);
             this.Utilities.Controls.Add(this.labelVersion);
             this.Utilities.Controls.Add(this.pictureBox1);
             this.Utilities.Controls.Add(this.buttonDiscordLink);
@@ -176,35 +189,15 @@ namespace MonkeModManager
             this.Utilities.Text = "Utilities";
             this.Utilities.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // button2
             // 
-            this.button1.Location = new System.Drawing.Point(14, 192);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(132, 23);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Refresh mod list";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(14, 72);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(132, 23);
-            this.button8.TabIndex = 17;
-            this.button8.Text = "Install MMM File";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(14, 221);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(132, 23);
-            this.button5.TabIndex = 13;
-            this.button5.Text = "Check for updates";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button3_Click);
+            this.button2.Location = new System.Drawing.Point(379, 152);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(132, 23);
+            this.button2.TabIndex = 19;
+            this.button2.Text = "Check out the guides!";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // labelVersion
             // 
@@ -299,61 +292,67 @@ namespace MonkeModManager
             this.buttonUninstallAll.UseVisualStyleBackColor = true;
             this.buttonUninstallAll.Click += new System.EventHandler(this.buttonUninstallAll_Click);
             // 
-            // PluginAddons
+            // Updates
             // 
-            this.PluginAddons.Controls.Add(this.listViewed);
-            this.PluginAddons.Location = new System.Drawing.Point(4, 22);
-            this.PluginAddons.Name = "PluginAddons";
-            this.PluginAddons.Padding = new System.Windows.Forms.Padding(3);
-            this.PluginAddons.Size = new System.Drawing.Size(536, 256);
-            this.PluginAddons.TabIndex = 6;
-            this.PluginAddons.Text = "Cosmetic";
-            this.PluginAddons.UseVisualStyleBackColor = true;
+            this.Updates.Controls.Add(this.button1);
+            this.Updates.Controls.Add(this.listView1);
+            this.Updates.Location = new System.Drawing.Point(4, 22);
+            this.Updates.Name = "Updates";
+            this.Updates.Padding = new System.Windows.Forms.Padding(3);
+            this.Updates.Size = new System.Drawing.Size(536, 256);
+            this.Updates.TabIndex = 8;
+            this.Updates.Text = "Installed";
+            this.Updates.UseVisualStyleBackColor = true;
             // 
-            // listViewed
+            // button1
             // 
-            this.listViewed.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewed.CheckBoxes = true;
-            this.listViewed.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(6, 227);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(524, 23);
+            this.button1.TabIndex = 11;
+            this.button1.Text = "Uninstall Selected Mods";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // listView1
+            // 
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView1.CheckBoxes = true;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
             {
-                this.columnHeader1, this.columnHeader2, this.columnHeader3
+                this.columnHeader1, this.columnHeader2
             });
-            this.listViewed.ContextMenuStrip = this.contextMenuStripMain;
-            this.listViewed.FullRowSelect = true;
-            this.listViewed.HideSelection = false;
-            this.listViewed.Location = new System.Drawing.Point(6, 6);
-            this.listViewed.Name = "listViewed";
-            this.listViewed.Size = new System.Drawing.Size(524, 244);
-            this.listViewed.TabIndex = 1;
-            this.listViewed.UseCompatibleStateImageBehavior = false;
-            this.listViewed.View = System.Windows.Forms.View.Details;
-            this.listViewed.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listViewed_ItemChecked);
+            this.listView1.FullRowSelect = true;
+            this.listView1.HideSelection = false;
+            this.listView1.Location = new System.Drawing.Point(6, 6);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(524, 215);
+            this.listView1.TabIndex = 1;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView1_ItemChecked);
             // 
             // columnHeader1
             // 
             this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 270;
+            this.columnHeader1.Width = 321;
             // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "Author";
-            this.columnHeader2.Width = 99;
+            this.columnHeader2.Text = "";
+            this.columnHeader2.Width = 148;
             // 
-            // columnHeader3
+            // Installed
             // 
-            this.columnHeader3.Text = "Mod";
-            this.columnHeader3.Width = 121;
-            // 
-            // Plugins
-            // 
-            this.Plugins.Controls.Add(this.listViewMods);
-            this.Plugins.Location = new System.Drawing.Point(4, 22);
-            this.Plugins.Name = "Plugins";
-            this.Plugins.Padding = new System.Windows.Forms.Padding(3);
-            this.Plugins.Size = new System.Drawing.Size(536, 256);
-            this.Plugins.TabIndex = 0;
-            this.Plugins.Text = "Plugins";
-            this.Plugins.UseVisualStyleBackColor = true;
+            this.Installed.Controls.Add(this.listViewMods);
+            this.Installed.Location = new System.Drawing.Point(4, 22);
+            this.Installed.Name = "Installed";
+            this.Installed.Padding = new System.Windows.Forms.Padding(3);
+            this.Installed.Size = new System.Drawing.Size(536, 256);
+            this.Installed.TabIndex = 0;
+            this.Installed.Text = "Plugins";
+            this.Installed.UseVisualStyleBackColor = true;
             // 
             // listViewMods
             // 
@@ -361,7 +360,7 @@ namespace MonkeModManager
             this.listViewMods.CheckBoxes = true;
             this.listViewMods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
             {
-                this.columnHeaderName, this.columnHeaderAuthor
+                this.columnHeader3, this.columnHeader4
             });
             this.listViewMods.ContextMenuStrip = this.contextMenuStripMain;
             this.listViewMods.FullRowSelect = true;
@@ -369,101 +368,42 @@ namespace MonkeModManager
             this.listViewMods.Location = new System.Drawing.Point(6, 6);
             this.listViewMods.Name = "listViewMods";
             this.listViewMods.Size = new System.Drawing.Size(524, 244);
-            this.listViewMods.TabIndex = 0;
+            this.listViewMods.TabIndex = 2;
             this.listViewMods.UseCompatibleStateImageBehavior = false;
             this.listViewMods.View = System.Windows.Forms.View.Details;
             this.listViewMods.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listViewMods_ItemChecked);
             this.listViewMods.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listViewMods_ItemSelectionChanged);
             this.listViewMods.DoubleClick += new System.EventHandler(this.listViewMods_DoubleClick);
             // 
-            // columnHeaderName
+            // columnHeader3
             // 
-            this.columnHeaderName.Text = "Name";
-            this.columnHeaderName.Width = 321;
+            this.columnHeader3.Text = "Name";
+            this.columnHeader3.Width = 321;
             // 
-            // columnHeaderAuthor
+            // columnHeader4
             // 
-            this.columnHeaderAuthor.Text = "Author";
+            this.columnHeader4.Text = "Author";
+            this.columnHeader4.Width = 136;
             // 
             // tabControlMain
             // 
             this.tabControlMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlMain.Controls.Add(this.Plugins);
-            this.tabControlMain.Controls.Add(this.PluginAddons);
+            this.tabControlMain.Controls.Add(this.Installed);
+            this.tabControlMain.Controls.Add(this.Updates);
             this.tabControlMain.Controls.Add(this.Utilities);
-            this.tabControlMain.Controls.Add(this.GameOptions);
             this.tabControlMain.Location = new System.Drawing.Point(10, 53);
             this.tabControlMain.Name = "tabControlMain";
             this.tabControlMain.SelectedIndex = 0;
             this.tabControlMain.Size = new System.Drawing.Size(544, 282);
             this.tabControlMain.TabIndex = 8;
             // 
-            // GameOptions
-            // 
-            this.GameOptions.Controls.Add(this.label4);
-            this.GameOptions.Controls.Add(this.checkBox1);
-            this.GameOptions.Controls.Add(this.button6);
-            this.GameOptions.Controls.Add(this.button3);
-            this.GameOptions.Location = new System.Drawing.Point(4, 22);
-            this.GameOptions.Name = "GameOptions";
-            this.GameOptions.Padding = new System.Windows.Forms.Padding(3);
-            this.GameOptions.Size = new System.Drawing.Size(536, 256);
-            this.GameOptions.TabIndex = 7;
-            this.GameOptions.Text = "Game Options";
-            this.GameOptions.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.Location = new System.Drawing.Point(286, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(252, 85);
-            this.label4.TabIndex = 4;
-            this.label4.Text = resources.GetString("label4.Text");
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.Location = new System.Drawing.Point(3, 3);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(110, 20);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Run Windowed?";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(119, 227);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(107, 23);
-            this.button6.TabIndex = 1;
-            this.button6.Text = "Run Vanilla";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(6, 227);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(107, 23);
-            this.button3.TabIndex = 0;
-            this.button3.Text = "Run Modded";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click_1);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(379, 152);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(132, 23);
-            this.button2.TabIndex = 19;
-            this.button2.Text = "Check out the guides!";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(566, 376);
+            this.Controls.Add(this.modsButton);
             this.Controls.Add(this.buttonModInfo);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.buttonInstall);
@@ -472,6 +412,7 @@ namespace MonkeModManager
             this.Controls.Add(this.textBoxDirectory);
             this.Controls.Add(this.tabControlMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Location = new System.Drawing.Point(15, 15);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Monke Mod Manager";
@@ -482,27 +423,34 @@ namespace MonkeModManager
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.PluginAddons.ResumeLayout(false);
-            this.Plugins.ResumeLayout(false);
+            this.Updates.ResumeLayout(false);
+            this.Installed.ResumeLayout(false);
             this.tabControlMain.ResumeLayout(false);
-            this.GameOptions.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.TabPage GameOptions;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.TabPage PluginAddons;
+        private System.Windows.Forms.ListView listViewMods;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.TabPage Utilities;
+        private System.Windows.Forms.Button buttonUninstallAll;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label labelOpen;
+        private System.Windows.Forms.Button buttonOpenGameFolder;
+        private System.Windows.Forms.Button buttonOpenConfig;
+        private System.Windows.Forms.Button buttonBepInEx;
+        private System.Windows.Forms.Button buttonDiscordLink;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label labelVersion;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TabPage Updates;
+        private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ListView listViewed;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.TabPage Installed;
+        private System.Windows.Forms.TabControl tabControlMain;
+        private System.Windows.Forms.Button modsButton;
 
         #endregion
 
@@ -511,23 +459,10 @@ namespace MonkeModManager
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonInstall;
         private System.Windows.Forms.Label labelStatus;
-        private System.Windows.Forms.TabControl tabControlMain;
-        private System.Windows.Forms.TabPage Plugins;
-        private System.Windows.Forms.ListView listViewMods;
         private System.Windows.Forms.ColumnHeader columnHeaderName;
         private System.Windows.Forms.ColumnHeader columnHeaderAuthor;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripMain;
         private System.Windows.Forms.ToolStripMenuItem viewInfoToolStripMenuItem;
         private System.Windows.Forms.Button buttonModInfo;
-        private System.Windows.Forms.TabPage Utilities;
-        private System.Windows.Forms.Button buttonUninstallAll;
-        private System.Windows.Forms.Label labelOpen;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button buttonBepInEx;
-        private System.Windows.Forms.Button buttonOpenConfig;
-        private System.Windows.Forms.Button buttonOpenGameFolder;
-        private System.Windows.Forms.Button buttonDiscordLink;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label labelVersion;
     }
 }
