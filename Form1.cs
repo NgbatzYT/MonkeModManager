@@ -23,8 +23,8 @@ namespace MonkeModManager
         Dictionary<string, bool> installedr = new Dictionary<string, bool>();
         private List<ReleaseInfo> releases;
         private bool modsDisabled;
-        private int CurrentVersion = 14; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
-        public readonly string VersionNumber = "2.7.0.0"; // Fun fact of the update: abcdefghijklmnopqrstuvwxyz // Fun fact of the year: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
+        private int CurrentVersion = 15; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
+        public readonly string VersionNumber = "2.7.1.0"; // Fun fact of the update: abcdefghijklmnopqrstuvwxyz // Fun fact of the year: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
         private string currentMod;
         
         public Form1() => InitializeComponent();
@@ -539,9 +539,9 @@ namespace MonkeModManager
             installedr.Clear();
             installed.Clear();
             
-            var modsPath = Path.Combine(InstallDirectory, "BepInEx/plugins");
+            var modsPath = Path.Combine(InstallDirectory, "BepInEx\\plugins");
             
-            var modDlls = Directory.GetFiles(modsPath, "*.dll", SearchOption.AllDirectories);
+            var modDlls = Directory.GetFiles(modsPath, "*.dll", SearchOption.AllDirectories).Concat(Directory.GetFiles(modsPath, "*.disable", SearchOption.AllDirectories));
 
             foreach (var d in modDlls)
             {
@@ -559,13 +559,24 @@ namespace MonkeModManager
                         }
                     }
                     a++;
-                    item.Text = Path.GetFileNameWithoutExtension(d) + @" " + a;
+                    if (Path.GetExtension(d) == ".disable")
+                    {
+                        item.Text = Path.GetFileNameWithoutExtension(d) + $" {a}" + " - Disabled";
+                    }
+                    else
+                        item.Text = Path.GetFileNameWithoutExtension(d) + @" " + a;
                 }
                 else
                 {
-                    item.Text = Path.GetFileNameWithoutExtension(d);
+                    if (Path.GetExtension(d) == ".disable")
+                    {
+                        item.Text = Path.GetFileNameWithoutExtension(d) + " - Disabled";
+                    } 
+                    else
+                        item.Text = Path.GetFileNameWithoutExtension(d);
                 }
                 
+
                 installed.Add(item.Text, d);
                 
                 listView1.Items.Add(item);
@@ -594,7 +605,7 @@ namespace MonkeModManager
             }
         }
         
-        private void CheckForUpdates() // i somehow deleted this when cleaning up unrequired code AAAAAAAAAAAAAAAAAAa
+        private void CheckForUpdates()
         {
             try
             {
@@ -612,8 +623,39 @@ namespace MonkeModManager
             }
             catch (Exception e)
             {
-                // HAHAHA I WILL NEVER CATCH!!!
+                MessageBox.Show(@"An error occured when checking for updates, MMM will now close.", @"Update Unknown", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Environment.Exit(0);
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            foreach (var d in installed)
+            {
+                if (installedr.ContainsKey(d.Key) && installedr[d.Key])
+                    if (File.Exists(d.Value))
+                    {
+                        var el = Path.ChangeExtension(d.Value, ".disable");
+                        File.Move(d.Value, el);
+                        UpdateStatus($"Disabled {d.Key}...");
+                    }
+            }
+            GetInstalledMods();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            foreach (var d in installed)
+            {
+                if (installedr.ContainsKey(d.Key) && installedr[d.Key])
+                    if (File.Exists(d.Value))
+                    {
+                        var el = Path.ChangeExtension(d.Value, ".dll");
+                        File.Move(d.Value, el);
+                        UpdateStatus($"Enabled {d.Key}...");
+                    }
+            }
+            GetInstalledMods();
         }
     }
 }

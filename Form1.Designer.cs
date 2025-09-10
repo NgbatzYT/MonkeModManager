@@ -41,8 +41,8 @@ namespace MonkeModManager
             this.viewInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonModInfo = new System.Windows.Forms.Button();
             this.modsButton = new System.Windows.Forms.Button();
-            this.columnHeaderName = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderAuthor = new System.Windows.Forms.ColumnHeader();
+            this.columnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderAuthor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Utilities = new System.Windows.Forms.TabPage();
             this.button2 = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -57,13 +57,15 @@ namespace MonkeModManager
             this.Updates = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Installed = new System.Windows.Forms.TabPage();
             this.listViewMods = new System.Windows.Forms.ListView();
-            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControlMain = new System.Windows.Forms.TabControl();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.contextMenuStripMain.SuspendLayout();
             this.Utilities.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -75,7 +77,8 @@ namespace MonkeModManager
             // 
             // textBoxDirectory
             // 
-            this.textBoxDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxDirectory.Enabled = false;
             this.textBoxDirectory.Location = new System.Drawing.Point(10, 25);
             this.textBoxDirectory.Name = "textBoxDirectory";
@@ -126,10 +129,8 @@ namespace MonkeModManager
             // 
             // contextMenuStripMain
             // 
-            this.contextMenuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[]
-            {
-                this.viewInfoToolStripMenuItem
-            });
+            this.contextMenuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewInfoToolStripMenuItem});
             this.contextMenuStripMain.Name = "contextMenuStripMain";
             this.contextMenuStripMain.Size = new System.Drawing.Size(124, 26);
             // 
@@ -294,6 +295,8 @@ namespace MonkeModManager
             // 
             // Updates
             // 
+            this.Updates.Controls.Add(this.button4);
+            this.Updates.Controls.Add(this.button3);
             this.Updates.Controls.Add(this.button1);
             this.Updates.Controls.Add(this.listView1);
             this.Updates.Location = new System.Drawing.Point(4, 22);
@@ -307,9 +310,9 @@ namespace MonkeModManager
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(6, 227);
+            this.button1.Location = new System.Drawing.Point(374, 227);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(524, 23);
+            this.button1.Size = new System.Drawing.Size(156, 23);
             this.button1.TabIndex = 11;
             this.button1.Text = "Uninstall Selected Mods";
             this.button1.UseVisualStyleBackColor = true;
@@ -317,12 +320,13 @@ namespace MonkeModManager
             // 
             // listView1
             // 
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listView1.CheckBoxes = true;
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
-            {
-                this.columnHeader1, this.columnHeader2
-            });
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
             this.listView1.FullRowSelect = true;
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(6, 6);
@@ -356,12 +360,13 @@ namespace MonkeModManager
             // 
             // listViewMods
             // 
-            this.listViewMods.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewMods.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewMods.CheckBoxes = true;
-            this.listViewMods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
-            {
-                this.columnHeader3, this.columnHeader4
-            });
+            this.listViewMods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3,
+            this.columnHeader4});
             this.listViewMods.ContextMenuStrip = this.contextMenuStripMain;
             this.listViewMods.FullRowSelect = true;
             this.listViewMods.HideSelection = false;
@@ -387,7 +392,9 @@ namespace MonkeModManager
             // 
             // tabControlMain
             // 
-            this.tabControlMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControlMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControlMain.Controls.Add(this.Installed);
             this.tabControlMain.Controls.Add(this.Updates);
             this.tabControlMain.Controls.Add(this.Utilities);
@@ -396,6 +403,28 @@ namespace MonkeModManager
             this.tabControlMain.SelectedIndex = 0;
             this.tabControlMain.Size = new System.Drawing.Size(544, 282);
             this.tabControlMain.TabIndex = 8;
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(6, 227);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(156, 23);
+            this.button3.TabIndex = 12;
+            this.button3.Text = "Disable Selected Mods";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button4.Location = new System.Drawing.Point(190, 227);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(156, 23);
+            this.button4.TabIndex = 13;
+            this.button4.Text = "Enable Selected Mods";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Form1
             // 
@@ -428,6 +457,7 @@ namespace MonkeModManager
             this.tabControlMain.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ListView listViewMods;
@@ -464,5 +494,7 @@ namespace MonkeModManager
         private System.Windows.Forms.ContextMenuStrip contextMenuStripMain;
         private System.Windows.Forms.ToolStripMenuItem viewInfoToolStripMenuItem;
         private System.Windows.Forms.Button buttonModInfo;
+        private Button button4;
+        private Button button3;
     }
 }
