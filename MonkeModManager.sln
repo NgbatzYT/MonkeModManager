@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonkeModManager", "MonkeModManager\MonkeModManager.csproj", "{A422F6B5-2DB0-460F-A973-93FD99220724}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonkeModManager", "MonkeModManager.csproj", "{A422F6B5-2DB0-460F-A973-93FD99220724}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,3 +14,4 @@ Global
 		{A422F6B5-2DB0-460F-A973-93FD99220724}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
+
