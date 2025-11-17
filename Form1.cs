@@ -1,31 +1,33 @@
-﻿using System;
+﻿using MonkeModManager.Internals;
+using MonkeModManager.Internals.SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using MonkeModManager.Internals;
-using MonkeModManager.Internals.SimpleJSON;
 
 namespace MonkeModManager
 {
     public partial class Form1 : Form
     {
-        // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-        private string DefaultOculusInstallDirectory = @"C:\Program Files\Oculus\Software\Software\another-axiom-gorilla-tag";
-        private string DefaultSteamInstallDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag";
-        public static string InstallDirectory = @""; // If you see this you should give me 500 dollars!!!!!
-        Dictionary<string, int> groups = new Dictionary<string, int>();
-        Dictionary<string, string> installed = new Dictionary<string, string>();
-        Dictionary<string, bool> installedr = new Dictionary<string, bool>();
-        private List<ReleaseInfo> releases;
+        public static Form1 instance;
+        private string DefaultOculusInstallDirectory = @"C:\Program Files\Oculus\Software\Software\another-axiom-gorilla-tag"; // Default Oculus Install Directory
+        private string DefaultSteamInstallDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag"; // Default Steam Install Directory
+        public static string InstallDirectory = @""; // Install Directory Of Gorilla Tag
+        Dictionary<string, int> groups = new Dictionary<string, int>(); // All mod groups?
+        Dictionary<string, string> installed = new Dictionary<string, string>(); // All Installed Mods
+        Dictionary<string, bool> installedr = new Dictionary<string, bool>(); // Selected from Installed Tab
+        private List<ReleaseInfo> releases; // all ReleaseInfo's
         private bool modsDisabled;
-        private int CurrentVersion = 15; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
-        public readonly string VersionNumber = "2.7.1.0"; // Fun fact of the update: abcdefghijklmnopqrstuvwxyz // Fun fact of the year: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
+        private int CurrentVersion = 16; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
+        public const string VersionNumber = "2.7.2.0";
         private string currentMod;
+        public bool debug;
         
         public Form1() => InitializeComponent();
 
@@ -51,12 +53,14 @@ namespace MonkeModManager
             }
         }
 
-        private void buttonInstall_Click(object sender, EventArgs e) => new Thread(Install).Start(); // im very tired help aeuhgn( Frna8eyhify7sveur
+        private void buttonInstall_Click(object sender, EventArgs e) => new Thread(Install).Start();
 
-        private void Install()
+        private async void Install()
         {
             try
             {
+                var bepinex = Directory.Exists(Path.Combine(InstallDirectory, "BepInEx"));
+
                 ChangeInstallButtonState(false);
                 UpdateStatus("Starting install sequence...");
                 foreach (ReleaseInfo release in releases)
@@ -64,8 +68,8 @@ namespace MonkeModManager
                     currentMod = release.Name;
                     if (release.Install)
                     {
-                        UpdateStatus(string.Format("Downloading...{0}", release.Name)); // its a lie it never downloaded
-                        byte[] file = DownloadFile(release.Link);
+                        UpdateStatus(string.Format("Downloading...{0}", release.Name));
+                        byte[] file = await DownloadFile(release.Link, release.Name);
                         UpdateStatus(string.Format("Installing...{0}", release.Name));
                         string fileName = Path.GetFileName(release.Link);
                         if (Path.GetExtension(fileName).Equals(".dll"))
@@ -92,16 +96,18 @@ namespace MonkeModManager
                         {
                             UnzipFile(file, (release.InstallLocation != null) ? Path.Combine(InstallDirectory, release.InstallLocation) : InstallDirectory);
                         }
+                        
                         UpdateStatus($"Installed {release.Name}!");
                     }
                 }
                 UpdateStatus("Install complete!");
                 ChangeInstallButtonState(true);
                 GetInstalledMods();
+                if (!bepinex) ConfigFix();
             }
             catch (Exception e)
             {
-                MessageBox.Show(@"Hey, an error occurred. Please go to discord.gg/monkemod and tell 'Ngbatz' or 'Graze' to fix this mod: " + currentMod + @". Error:" + e.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Hey, an error occurred. Please go to discord.gg/monkemod and tell 'Ngbatz' to fix this mod: '" + currentMod + @"'. Error: " + e.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -124,11 +130,25 @@ namespace MonkeModManager
             }));
         }
 
-        private byte[] DownloadFile(string url)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async Task<byte[]> DownloadFile(string url, string name)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            var t = new TaskCompletionSource<byte[]>();
+             
             WebClient client = new WebClient();
             client.Proxy = null;
-            return client.DownloadData(url);
+
+            client.DownloadProgressChanged += (s, e) =>
+            {
+                UpdateStatus($"Downloading... {name} {e.ProgressPercentage}%");
+            };
+
+            client.DownloadDataCompleted += (s, e) => {
+                t.SetResult(e.Result);
+            };
+            client.DownloadDataAsync(new Uri(url));
+            return t.Task.Result;
         }
 
         private void listViewMods_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -180,7 +200,7 @@ namespace MonkeModManager
 
         private void listViewMods_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            buttonModInfo.Enabled = listViewMods.SelectedItems.Count > 0; // idk what this is for but i think its important
+            buttonModInfo.Enabled = listViewMods.SelectedItems.Count > 0; // idk what this is for but i think its important // prolly is important
         }
         void listViewMods_DoubleClick(object sender, EventArgs e) => OpenLinkFromRelease();
         void viewInfoToolStripMenuItem_Click(object sender, EventArgs e) => OpenLinkFromRelease(); // why is there 2 of these methods like what
@@ -255,7 +275,8 @@ namespace MonkeModManager
         void Form1_Load(object sender, EventArgs e)
         {
             CheckForUpdates();
-            
+
+            instance = this;
             
             InstallDirectory = Properties.Settings.Default.InstallDirectory;
 
@@ -284,9 +305,8 @@ namespace MonkeModManager
                 ShowErrorFindingDirectoryMessage();
             }
 
-            ConfigFix(); // i forgot about this // lol same // haha i can't find that method funny right
+            ConfigFix();
             new Thread(LoadRequiredPlugins).Start();
-            new Thread(GetInstalledMods).Start();
         }
 
         private void UpdateStatus(string status)
@@ -332,13 +352,12 @@ namespace MonkeModManager
         }
 
         private void LoadReleases()
-        {
-            const bool debugging = false;
+        { 
             JSONNode decodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/groupinfo.json"));
             JSONNode decodedMods = null;
 
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            decodedMods = JSON.Parse(!debugging ? DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/modinfo.json") : DownloadSite("https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/modinfo.json"));
+            decodedMods = JSON.Parse(!debug ? DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/modinfo.json") : DownloadSite($"https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/modinfo.json?nocache={DateTime.Now.ToString("ddMMyyyyHHmmss")}"));
 
 
             var allMods = decodedMods.AsArray;
@@ -376,6 +395,7 @@ namespace MonkeModManager
         public void ConfigFix()
         {
             if (!File.Exists(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"))) {
+                if (!Directory.Exists(Path.Combine(InstallDirectory, @"BepInEx"))) { return; }
                 var eggs = DownloadSite("https://github.com/The-Graze/MonkeModInfo/raw/refs/heads/master/BepInEx.cfg");
                 File.WriteAllText(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"), eggs);
             }
@@ -397,9 +417,8 @@ namespace MonkeModManager
                 LoadReleases();
                 this.Invoke((MethodInvoker)(() =>
                 {
-                    //Invoke so we can call from current thread
-                    //Update checkbox's text
-                    //Dictionary<string, int> includedGroups = new Dictionary<string, int>(); // is this even used // lol its not!
+                    // Invoke so we can call from current thread
+                    // Update checkbox's text
 
                     for (int i = 0; i < groups.Count(); i++)
                     {
@@ -440,6 +459,7 @@ namespace MonkeModManager
                 }));
 
                 UpdateStatus("Release info updated!");
+                GetInstalledMods();
             }
             catch (Exception e)
             {
@@ -533,7 +553,7 @@ namespace MonkeModManager
         }
 
 
-        private void GetInstalledMods()
+        public void GetInstalledMods()
         {
             listView1.Items.Clear();
             installedr.Clear();
@@ -541,12 +561,17 @@ namespace MonkeModManager
             
             var modsPath = Path.Combine(InstallDirectory, "BepInEx\\plugins");
             
+            if(!Directory.Exists(modsPath))
+            {
+                return;
+            }
+
+
             var modDlls = Directory.GetFiles(modsPath, "*.dll", SearchOption.AllDirectories).Concat(Directory.GetFiles(modsPath, "*.disable", SearchOption.AllDirectories));
 
             foreach (var d in modDlls)
             {
                 ListViewItem item = new ListViewItem();
-
 
                 if (installed.ContainsKey(Path.GetFileNameWithoutExtension(d)))
                 {
@@ -575,7 +600,6 @@ namespace MonkeModManager
                     else
                         item.Text = Path.GetFileNameWithoutExtension(d);
                 }
-                
 
                 installed.Add(item.Text, d);
                 
@@ -600,6 +624,8 @@ namespace MonkeModManager
         {
             foreach (ListViewItem item in listView1.Items)
             {
+                if (item == null || String.IsNullOrEmpty(item.Text)) return;
+
                 installedr.Remove(item.Text);
                 installedr.Add(item.Text, item.Checked);
             }
@@ -623,7 +649,7 @@ namespace MonkeModManager
             }
             catch (Exception e)
             {
-                MessageBox.Show(@"An error occured when checking for updates, MMM will now close.", @"Update Unknown", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"An error occured while checking for updates, MMM will now close.", @"Update Unknown", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Environment.Exit(0);
             }
         }
@@ -655,6 +681,17 @@ namespace MonkeModManager
                         UpdateStatus($"Enabled {d.Key}...");
                     }
             }
+            GetInstalledMods();
+        }
+
+        private void button6_Click(object sender, EventArgs e) // Backup manager button
+        {
+            BackupManager b = new();
+            b.ShowDialog();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
             GetInstalledMods();
         }
     }

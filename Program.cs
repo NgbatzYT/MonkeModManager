@@ -17,12 +17,11 @@ namespace MonkeModManager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 f = new Form1();
-            if (args.Length > 0 && File.Exists(args[0]))
-            {
-                Form1.InstallDirectory = Properties.Settings.Default.InstallDirectory;
-                f.InstallMMMFile(args[0]); 
-            }
+            Form1 f = new();
+#if DEBUG
+f.debug = true;
+#endif 
+            if (args.Length > 0 && args[0] == "") { f.debug = true; }
             Application.Run(f);
         }
     }

@@ -366,11 +366,6 @@
         wWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBjWxv8DPpS0y5F36s8AAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="label4.Text" xml:space="preserve">
-    <value>Currently unsupported for the oculus/meta link app. Instead the buttons just enable and disable mods. Launch options only work on steam. 
-
-It also saves the last option so running via steam after running vanilla here will run vanilla on steam.</value>
-  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA
