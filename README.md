@@ -5,19 +5,14 @@
 This program will install custom mods into Gorilla Tag automatically, and can be re-run in order to update the mods
 
 This uses the github api to get the latest release of all these mods, so you know you'll always be getting the latest version!
-(If there is a mod thatyou have made that you want added to MMM, send me or Graze a message or ping us somewhere on Discord! `ngbatzyt` or `the.graze`)
-
-## To have your Theme/Cosmetic etc added.
-DM me (`ngbatzyt`):
-* The file and images of the thing
-* What mod it uses the name of it and the author name.
+(If there is a mod that you have made that you want added to MMM, send me a message or ping us somewhere on Discord! `ngbatzyt`)
 
 ## To have your mod added
 DM me:
 * The Github repository of the mod you want added 
 * Any dependencies
 
-Or fork => [this](https://github.com/The-Graze/MonkeModInfo) <= repository and add it yourself with a PullRequest
+Or fork => [this](https://github.com/NgbatzYT/MonkeModInfo) <= repository and add it yourself with a PullRequest
 
 Mod submission is likely subject to change in the future.
 
