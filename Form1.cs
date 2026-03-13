@@ -19,37 +19,34 @@ namespace MonkeModManager
         private string DefaultOculusInstallDirectory = @"C:\Program Files\Oculus\Software\Software\another-axiom-gorilla-tag"; // Default Oculus Install Directory
         private string DefaultSteamInstallDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag"; // Default Steam Install Directory
         public static string InstallDirectory = @""; // Install Directory Of Gorilla Tag
-        Dictionary<string, int> groups = new Dictionary<string, int>(); // All mod groups?
-        Dictionary<string, string> installed = new Dictionary<string, string>(); // All Installed Mods
-        Dictionary<string, bool> installedr = new Dictionary<string, bool>(); // Selected from Installed Tab
+        Dictionary<string, int> groups = []; // All mod groups?
+        Dictionary<string, string> installed = []; // All Installed Mods
+        Dictionary<string, bool> installedr = []; // Selected from Installed Tab
         private List<ReleaseInfo> releases; // all ReleaseInfo's
         private bool modsDisabled;
-        private int CurrentVersion = 16; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
-        public const string VersionNumber = "2.7.2.0";
+        private int CurrentVersion = 17; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
+        public const string VersionNumber = "2.7.2.1";
         private string currentMod;
-        public bool debug;
         
         public Form1() => InitializeComponent();
 
         private void buttonFolderBrowser_Click(object sender, EventArgs e)
         {
-            using (var fileDialog = new OpenFileDialog())
+            using var fileDialog = new OpenFileDialog();
+            fileDialog.FileName = "Gorilla Tag.exe";
+            fileDialog.Filter = "Exe Files (.exe)|*.exe|All Files (*.*)|*.*";
+            fileDialog.FilterIndex = 1;
+            if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                fileDialog.FileName = "Gorilla Tag.exe";
-                fileDialog.Filter = "Exe Files (.exe)|*.exe|All Files (*.*)|*.*";
-                fileDialog.FilterIndex = 1;
-                if (fileDialog.ShowDialog() == DialogResult.OK)
+                string path = fileDialog.FileName;
+                if (Path.GetFileName(path).Equals("Gorilla Tag.exe"))
                 {
-                    string path = fileDialog.FileName;
-                    if (Path.GetFileName(path).Equals("Gorilla Tag.exe"))
-                    {
-                        InstallDirectory = Path.GetDirectoryName(path);
-                        textBoxDirectory.Text = InstallDirectory;
-                        EditConfig(InstallDirectory);
-                    }
-                    else
-                        MessageBox.Show(@"That's not Gorilla Tag, please try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    InstallDirectory = Path.GetDirectoryName(path);
+                    textBoxDirectory.Text = InstallDirectory;
+                    EditConfig(InstallDirectory);
                 }
+                else
+                    MessageBox.Show(@"That's not Gorilla Tag, please try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -59,8 +56,6 @@ namespace MonkeModManager
         {
             try
             {
-                var bepinex = Directory.Exists(Path.Combine(InstallDirectory, "BepInEx"));
-
                 ChangeInstallButtonState(false);
                 UpdateStatus("Starting install sequence...");
                 foreach (ReleaseInfo release in releases)
@@ -103,7 +98,7 @@ namespace MonkeModManager
                 UpdateStatus("Install complete!");
                 ChangeInstallButtonState(true);
                 GetInstalledMods();
-                if (!bepinex) ConfigFix();
+                ConfigFix();
             }
             catch (Exception e)
             {
@@ -113,13 +108,9 @@ namespace MonkeModManager
 
         private void UnzipFile(byte[] data, string directory)
         {
-            using (MemoryStream ms = new MemoryStream(data))
-            {
-                using (var unzip = new Unzip(ms))
-                {
-                    unzip.ExtractToDirectory(directory);
-                }
-            }
+            using MemoryStream ms = new(data);
+            using var unzip = new Unzip(ms);
+            unzip.ExtractToDirectory(directory);
         }
 
         private void ChangeInstallButtonState(bool enabled)
@@ -130,14 +121,14 @@ namespace MonkeModManager
             }));
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task<byte[]> DownloadFile(string url, string name)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var t = new TaskCompletionSource<byte[]>();
-             
-            WebClient client = new WebClient();
-            client.Proxy = null;
+
+            WebClient client = new()
+            {
+                Proxy = null
+            };
 
             client.DownloadProgressChanged += (s, e) =>
             {
@@ -334,7 +325,7 @@ namespace MonkeModManager
                 RQuest.UserAgent = "Monke-Mod-Manager";
                 RQuest.Proxy = null;
                 HttpWebResponse Response = (HttpWebResponse)RQuest.GetResponse();
-                StreamReader Sr = new StreamReader(Response.GetResponseStream());
+                StreamReader Sr = new(Response.GetResponseStream());
                 string Code = Sr.ReadToEnd();
                 Sr.Close();
                 return Code;
@@ -353,11 +344,10 @@ namespace MonkeModManager
 
         private void LoadReleases()
         { 
-            JSONNode decodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/groupinfo.json"));
+            JSONNode decodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/groupinfo.json?nocache={DateTime.Now:ddMMyyyyHHmmss}"));
             JSONNode decodedMods = null;
 
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            decodedMods = JSON.Parse(!debug ? DownloadSite("https://raw.githubusercontent.com/The-Graze/MonkeModInfo/master/modinfo.json") : DownloadSite($"https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/modinfo.json?nocache={DateTime.Now.ToString("ddMMyyyyHHmmss")}"));
+            decodedMods = JSON.Parse(DownloadSite($"https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/modinfo.json?nocache={DateTime.Now:ddMMyyyyHHmmss}"));
 
 
             var allMods = decodedMods.AsArray;
@@ -366,7 +356,7 @@ namespace MonkeModManager
             for (int i = 0; i < allMods.Count; i++)
             {
                 JSONNode current = allMods[i];
-                ReleaseInfo release = new ReleaseInfo(current["name"], current["author"], current["version"], current["group"], current["download_url"], current["install_location"], current["git_path"],
+                ReleaseInfo release = new(current["name"], current["author"], current["version"], current["group"], current["download_url"], current["install_location"], current["git_path"],
                     current["mod"], current["dependencies"].AsArray);
                 releases.Add(release);
             }
@@ -394,19 +384,20 @@ namespace MonkeModManager
 
         public void ConfigFix()
         {
-            if (!File.Exists(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"))) {
-                if (!Directory.Exists(Path.Combine(InstallDirectory, @"BepInEx"))) { return; }
-                var eggs = DownloadSite("https://github.com/The-Graze/MonkeModInfo/raw/refs/heads/master/BepInEx.cfg");
-                File.WriteAllText(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"), eggs);
+            var conf = Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg");
+            if (!File.Exists(conf)) {
+                Directory.CreateDirectory(Path.Combine(InstallDirectory, @"BepInEx", "config"));
+                var eggs = DownloadSite("https://github.com/NgbatzYT/MonkeModInfo/raw/refs/heads/master/BepInEx.cfg");
+                if (eggs != null) File.WriteAllText(conf, eggs);
+
             }
 
-            string c = File.ReadAllText(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"));
-            if (!c.Contains("HideManagerGameObject = false")) {
-                return;
-            }
+            string c = File.ReadAllText(conf);
+            if (!c.Contains("HideManagerGameObject = false")) return;
+            
 
             string e = c.Replace("HideManagerGameObject = false", "HideManagerGameObject = true");
-            File.WriteAllText(Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg"), e);
+            File.WriteAllText(conf, e);
         }
 
         private void LoadRequiredPlugins()
@@ -429,8 +420,10 @@ namespace MonkeModManager
 
                     foreach (ReleaseInfo release in releases)
                     {
-                        ListViewItem item = new ListViewItem();
-                        item.Text = release.Name;
+                        ListViewItem item = new()
+                        {
+                            Text = release.Name
+                        };
                         if (!String.IsNullOrEmpty(release.Version)) item.Text = $"{release.Name} - {release.Version}";
                         if (!String.IsNullOrEmpty(release.Tag)) { item.Text = string.Format("{0} - ({1})", release.Name, release.Tag); }
                         ;
@@ -485,28 +478,25 @@ namespace MonkeModManager
             bool found = false;
             while (found == false)
             {
-                using (var fileDialog = new OpenFileDialog())
+                using var fileDialog = new OpenFileDialog();
+                fileDialog.FileName = "Gorilla Tag.exe";
+                fileDialog.Filter = "Exe Files (.exe)|*.exe|All Files (*.*)|*.*";
+                fileDialog.FilterIndex = 1;
+                if (fileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    fileDialog.FileName = "Gorilla Tag.exe";
-                    fileDialog.Filter = "Exe Files (.exe)|*.exe|All Files (*.*)|*.*";
-                    fileDialog.FilterIndex = 1;
-                    if (fileDialog.ShowDialog() == DialogResult.OK)
+                    string path = fileDialog.FileName;
+                    if (Path.GetFileName(path).Equals("Gorilla Tag.exe"))
                     {
-                        string path = fileDialog.FileName;
-                        if (Path.GetFileName(path).Equals("Gorilla Tag.exe"))
-                        {
-                            InstallDirectory = Path.GetDirectoryName(path);
-                            textBoxDirectory.Text = InstallDirectory;
-                            found = true;
-                            EditConfig(InstallDirectory);
-                        }
-                        else
-                            MessageBox.Show(@"That's not Gorilla Tag, please try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        InstallDirectory = Path.GetDirectoryName(path);
+                        textBoxDirectory.Text = InstallDirectory;
+                        found = true;
+                        EditConfig(InstallDirectory);
                     }
                     else
-                        Environment.Exit(0);
-
+                        MessageBox.Show(@"That's not Gorilla Tag, please try again.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                else
+                    Environment.Exit(0);
             }
         }
 
@@ -571,7 +561,7 @@ namespace MonkeModManager
 
             foreach (var d in modDlls)
             {
-                ListViewItem item = new ListViewItem();
+                ListViewItem item = new();
 
                 if (installed.ContainsKey(Path.GetFileNameWithoutExtension(d)))
                 {
@@ -647,7 +637,7 @@ namespace MonkeModManager
                     }));
                 }
             }
-            catch (Exception e)
+            catch
             {
                 MessageBox.Show(@"An error occured while checking for updates, MMM will now close.", @"Update Unknown", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Environment.Exit(0);
