@@ -44,6 +44,7 @@ namespace MonkeModManager
             this.columnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderAuthor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Utilities = new System.Windows.Forms.TabPage();
+            this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -67,6 +68,7 @@ namespace MonkeModManager
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControlMain = new System.Windows.Forms.TabControl();
+            this.button8 = new System.Windows.Forms.Button();
             this.contextMenuStripMain.SuspendLayout();
             this.Utilities.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -178,6 +180,8 @@ namespace MonkeModManager
             // 
             // Utilities
             // 
+            this.Utilities.Controls.Add(this.button8);
+            this.Utilities.Controls.Add(this.button7);
             this.Utilities.Controls.Add(this.button6);
             this.Utilities.Controls.Add(this.button2);
             this.Utilities.Controls.Add(this.labelVersion);
@@ -192,11 +196,21 @@ namespace MonkeModManager
             this.Utilities.Text = "Utilities";
             this.Utilities.UseVisualStyleBackColor = true;
             // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(14, 101);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(134, 23);
+            this.button7.TabIndex = 21;
+            this.button7.Text = "Install External Mod";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // button6
             // 
             this.button6.Location = new System.Drawing.Point(14, 72);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(132, 23);
+            this.button6.Size = new System.Drawing.Size(134, 23);
             this.button6.TabIndex = 20;
             this.button6.Text = "Backup Manager";
             this.button6.UseVisualStyleBackColor = true;
@@ -204,9 +218,9 @@ namespace MonkeModManager
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(379, 152);
+            this.button2.Location = new System.Drawing.Point(379, 181);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(132, 23);
+            this.button2.Size = new System.Drawing.Size(134, 23);
             this.button2.TabIndex = 19;
             this.button2.Text = "Check out the guides!";
             this.button2.UseVisualStyleBackColor = true;
@@ -236,7 +250,7 @@ namespace MonkeModManager
             // 
             // buttonDiscordLink
             // 
-            this.buttonDiscordLink.Location = new System.Drawing.Point(379, 181);
+            this.buttonDiscordLink.Location = new System.Drawing.Point(379, 210);
             this.buttonDiscordLink.Name = "buttonDiscordLink";
             this.buttonDiscordLink.Size = new System.Drawing.Size(134, 23);
             this.buttonDiscordLink.TabIndex = 8;
@@ -252,7 +266,7 @@ namespace MonkeModManager
             this.groupBox1.Controls.Add(this.labelOpen);
             this.groupBox1.Location = new System.Drawing.Point(373, 16);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(146, 130);
+            this.groupBox1.Size = new System.Drawing.Size(146, 159);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             // 
@@ -299,7 +313,7 @@ namespace MonkeModManager
             // 
             this.buttonUninstallAll.Location = new System.Drawing.Point(14, 43);
             this.buttonUninstallAll.Name = "buttonUninstallAll";
-            this.buttonUninstallAll.Size = new System.Drawing.Size(132, 23);
+            this.buttonUninstallAll.Size = new System.Drawing.Size(134, 23);
             this.buttonUninstallAll.TabIndex = 0;
             this.buttonUninstallAll.Text = "Uninstall All Mods";
             this.buttonUninstallAll.UseVisualStyleBackColor = true;
@@ -444,6 +458,16 @@ namespace MonkeModManager
             this.tabControlMain.Size = new System.Drawing.Size(544, 282);
             this.tabControlMain.TabIndex = 8;
             // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(379, 141);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(134, 23);
+            this.button8.TabIndex = 7;
+            this.button8.Text = "Log Folder";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -515,5 +539,7 @@ namespace MonkeModManager
         private Button button3;
         private Button button5;
         private Button button6;
+        private Button button7;
+        private Button button8;
     }
 }

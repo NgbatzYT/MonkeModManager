@@ -24,10 +24,10 @@ namespace MonkeModManager
         Dictionary<string, bool> installedr = []; // Selected from Installed Tab
         private List<ReleaseInfo> releases; // all ReleaseInfo's
         private bool modsDisabled;
-        private int CurrentVersion = 17; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
-        public const string VersionNumber = "2.7.2.1";
+        private int CurrentVersion = 18; // actual version is just below // (big changes update).(Feature update).(minor update).(hotfix) // i forget to forget fun fact
+        public const string VersionNumber = "2.7.2.2";
         private string currentMod;
-        
+
         public Form1() => InitializeComponent();
 
         private void buttonFolderBrowser_Click(object sender, EventArgs e)
@@ -91,7 +91,7 @@ namespace MonkeModManager
                         {
                             UnzipFile(file, (release.InstallLocation != null) ? Path.Combine(InstallDirectory, release.InstallLocation) : InstallDirectory);
                         }
-                        
+
                         UpdateStatus($"Installed {release.Name}!");
                     }
                 }
@@ -135,7 +135,8 @@ namespace MonkeModManager
                 UpdateStatus($"Downloading... {name} {e.ProgressPercentage}%");
             };
 
-            client.DownloadDataCompleted += (s, e) => {
+            client.DownloadDataCompleted += (s, e) =>
+            {
                 t.SetResult(e.Result);
             };
             client.DownloadDataAsync(new Uri(url));
@@ -185,7 +186,7 @@ namespace MonkeModManager
             }
 
             if (release.Name.Contains("BepInEx")) { e.Item.Checked = true; }
-            
+
             release.Install = e.Item.Checked;
         }
 
@@ -268,7 +269,7 @@ namespace MonkeModManager
             CheckForUpdates();
 
             instance = this;
-            
+
             InstallDirectory = Properties.Settings.Default.InstallDirectory;
 
             releases = [];
@@ -283,7 +284,7 @@ namespace MonkeModManager
             {
                 InstallDirectory = DefaultSteamInstallDirectory;
                 textBoxDirectory.Text = InstallDirectory;
-                EditConfig(InstallDirectory); 
+                EditConfig(InstallDirectory);
             }
             else if (File.Exists(Path.Combine(DefaultOculusInstallDirectory, "Gorilla Tag.exe")))
             {
@@ -343,7 +344,7 @@ namespace MonkeModManager
         }
 
         private void LoadReleases()
-        { 
+        {
             JSONNode decodedGroups = JSON.Parse(DownloadSite("https://raw.githubusercontent.com/ngbatzyt/MonkeModInfo/master/groupinfo.json?nocache={DateTime.Now:ddMMyyyyHHmmss}"));
             JSONNode decodedMods = null;
 
@@ -385,7 +386,8 @@ namespace MonkeModManager
         public void ConfigFix()
         {
             var conf = Path.Combine(InstallDirectory, @"BepInEx\config\BepInEx.cfg");
-            if (!File.Exists(conf)) {
+            if (!File.Exists(conf))
+            {
                 Directory.CreateDirectory(Path.Combine(InstallDirectory, @"BepInEx", "config"));
                 var eggs = DownloadSite("https://github.com/NgbatzYT/MonkeModInfo/raw/refs/heads/master/BepInEx.cfg");
                 if (eggs != null) File.WriteAllText(conf, eggs);
@@ -394,7 +396,7 @@ namespace MonkeModManager
 
             string c = File.ReadAllText(conf);
             if (!c.Contains("HideManagerGameObject = false")) return;
-            
+
 
             string e = c.Replace("HideManagerGameObject = false", "HideManagerGameObject = true");
             File.WriteAllText(conf, e);
@@ -470,7 +472,7 @@ namespace MonkeModManager
             }
             else
                 release.Install = false;
-            
+
         }
 
         private void NotFoundHandler()
@@ -513,7 +515,7 @@ namespace MonkeModManager
             Properties.Settings.Default.Save();
             InstallDirectory = Properties.Settings.Default.InstallDirectory;
         }
-        
+
         private void button2_Click(object sender, EventArgs e)
         {
             Process.Start("https://gorillatagmodding.ngbatzstudios.com/#/");
@@ -548,10 +550,10 @@ namespace MonkeModManager
             listView1.Items.Clear();
             installedr.Clear();
             installed.Clear();
-            
+
             var modsPath = Path.Combine(InstallDirectory, "BepInEx\\plugins");
-            
-            if(!Directory.Exists(modsPath))
+
+            if (!Directory.Exists(modsPath))
             {
                 return;
             }
@@ -586,20 +588,20 @@ namespace MonkeModManager
                     if (Path.GetExtension(d) == ".disable")
                     {
                         item.Text = Path.GetFileNameWithoutExtension(d) + " - Disabled";
-                    } 
+                    }
                     else
                         item.Text = Path.GetFileNameWithoutExtension(d);
                 }
 
                 installed.Add(item.Text, d);
-                
+
                 listView1.Items.Add(item);
             }
         }
-        
+
         private void button1_Click(object sender, EventArgs e)
         {
-            foreach (var d in  installed)
+            foreach (var d in installed)
             {
                 if (installedr.ContainsKey(d.Key) && installedr[d.Key])
                     if (File.Exists(d.Value))
@@ -620,7 +622,7 @@ namespace MonkeModManager
                 installedr.Add(item.Text, item.Checked);
             }
         }
-        
+
         private void CheckForUpdates()
         {
             try
@@ -683,6 +685,45 @@ namespace MonkeModManager
         private void button5_Click(object sender, EventArgs e)
         {
             GetInstalledMods();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                MessageBox.Show("Make sure you trust who made the mod you are installing, if you don't trust them do NOT install it.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                using var fileDialog = new OpenFileDialog();
+                fileDialog.Multiselect = false;
+                fileDialog.Filter = @"Dll files (.dll)|*.dll";
+                fileDialog.FilterIndex = 1;
+
+                if (fileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string path = fileDialog.FileName;
+                    if (Path.GetExtension(path).Equals(".dll", StringComparison.OrdinalIgnoreCase))
+                    {
+                        UpdateStatus("Installing External Mod...");
+                        File.Copy(Path.GetFullPath(path), Path.Combine(InstallDirectory, "BepInEx/plugins", Path.GetFileName(path)));
+                        UpdateStatus("Installed External Mod.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            var logDirectory = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "AppData\\LocalLow\\Another Axiom\\Gorilla Tag");
+            if (Directory.Exists(logDirectory))
+                Process.Start(logDirectory);
         }
     }
 }
